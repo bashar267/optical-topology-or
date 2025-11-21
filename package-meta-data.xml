@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>optical-topology-or</name>
+  <package-version>1.0</package-version>
+  <ncs-min-version>6.5</ncs-min-version>
+
+  <component>
+    <name>optical-topology-or</name>
+    <application>
+      <python-class-name>optical_topology_or.main.Main</python-class-name>
+    </application>
+  </component>
+
+</ncs-package>

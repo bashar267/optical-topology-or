@@ -1,0 +1,161 @@
+module optical-topology-or {
+  namespace "http://example.com/optical-topology-or";
+  prefix ot;
+
+  import tailf-common       { prefix tailf; }
+  import tailf-ncs          { prefix ncs; }
+  import ietf-inet-types    { prefix inet; }
+
+  organization "Your Lab";
+  description "Optical topology discovery and connection actions";
+
+  revision 2025-11-19 {
+    description "Stable version";
+  }
+
+  //---------------------------------------------
+  // DISCOVERED TOPOLOGY
+  //---------------------------------------------
+  container optical-topology {
+    config false;
+
+    list node {
+      key "name";
+
+      leaf name { type string; }
+      leaf device { type string; }
+      leaf mgmt-ip { type inet:ip-address; }
+
+      list degree {
+        key "id";
+        leaf id { type uint16; }
+      }
+
+      list srg {
+        key "id";
+        leaf id { type uint16; }
+      }
+
+      list tp {
+        key "name";
+
+        leaf name { type string; }
+        leaf interface { type string; }
+
+        leaf layer {
+          type enumeration {
+            enum OMS;
+            enum OTS;
+            enum MC;
+            enum NMC;
+          }
+        }
+
+        leaf degree-id { type uint16; }
+        leaf srg-id { type uint16; }
+
+        leaf direction {
+          type enumeration { enum RX; enum TX; enum BIDIR; }
+        }
+
+        leaf frequency { type string; }
+      }
+    }
+    list connection {
+      key "name";
+
+      leaf name   { type string; }
+      leaf device { type string; }
+      leaf src-if { type string; }
+      leaf dst-if { type string; }
+    }
+  }
+
+  //---------------------------------------------
+  // ACTIONS
+  //---------------------------------------------
+  container actions {
+
+    tailf:action discover-topology {
+      tailf:actionpoint discover-topology-ap;
+      description "Discover optical topology";
+
+      input {
+        leaf-list device { type string; }
+      }
+      output {
+        leaf result { type string; }
+      }
+    }
+
+    tailf:action build-connection {
+      tailf:actionpoint build-connection-ap;
+
+      input {
+        leaf device {
+          type string;
+        }
+
+        leaf frequency {
+          type string;
+          description "Optical frequency, e.g., 193.30";
+        }
+
+        // One of these must be provided for the source
+        leaf src-degree {
+          type uint16;
+          description "Source degree number (RX).";
+        }
+
+        leaf src-pp {
+          type uint16 {
+            range "1..6";
+          }
+          description "Source SRG1 PP number (1..6).";
+        }
+
+        // One of these must be provided for the destination
+        leaf dst-degree {
+          type uint16;
+          description "Destination degree number (TX).";
+        }
+
+        leaf dst-pp {
+          type uint16 {
+            range "1..6";
+          }
+          description "Destination SRG1 PP number (1..6).";
+        }
+      }
+
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+
+
+    tailf:action delete-connection {
+      tailf:actionpoint delete-connection-ap;
+      description "Delete a ROADM connection by its name.";
+
+      input {
+        leaf device {
+          type string;
+          mandatory true;
+        }
+        leaf connection-name {
+          type string;
+          mandatory true;
+        }
+      }
+
+      output {
+        leaf result {
+          type string;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+cat > .gitignore << 'EOF'
+# NSO build artifacts
+load-dir/
+*.fxs
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Editor/IDE junk
+*.swp
+*~
+EOF
